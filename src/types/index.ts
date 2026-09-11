@@ -188,6 +188,12 @@ export interface ConstellationData {
   referencePoints?: Array<{ x: number; y: number; label: string }>;
 }
 
+export interface WaveformData {
+  time: number[];
+  i: number[];
+  q: number[];
+}
+
 export interface Experiment {
   id: string;
   name: string;
