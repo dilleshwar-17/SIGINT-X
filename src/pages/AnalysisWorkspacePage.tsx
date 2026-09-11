@@ -89,6 +89,11 @@ export function AnalysisWorkspacePage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm">
+            <Link to={`/analyze/${id}/bits`} className="flex items-center gap-1.5">
+              Bits &amp; Frame
+            </Link>
+          </Button>
+          <Button variant="secondary" size="sm">
             <Link to={`/analyze/${id}/pipelines`} className="flex items-center gap-1.5">
               <GitBranch className="h-3.5 w-3.5" aria-hidden="true" />
               Pipelines

@@ -298,16 +298,25 @@ export const mockHypotheses: Hypothesis[] = [
   { id: "H4", description: "Decoding candidates generated", status: "complete", candidates: 4 },
 ];
 
+const bitStreamBytes = [
+  0xb4, 0xa6, 0xd5, 0x2c, 0x9e, 0x7b, 0xa3, 0x55,
+  0x1f, 0x0c, 0x96, 0xe8, 0x57, 0xd1, 0x2b, 0x9c,
+  0x74, 0x0a, 0x5e, 0xf3, 0x81, 0x6d, 0xc4, 0x0b,
+  0x39, 0xe2, 0xa7, 0x41, 0x5c, 0xd8, 0x6f, 0x02,
+];
+
+function bitsFromBytes(bytes: number[]): string {
+  return bytes.map((b) => b.toString(2).padStart(8, "0")).join("");
+}
+
 export const mockBitStream: BitStream = {
-  binary: "0001011010110101011001011010010110100110100101101011010010110",
-  bytes: new Uint8Array([
-    0x1a, 0xea, 0xd2, 0x95, 0x96, 0x96, 0xb4, 0xb0, 0x5a, 0x6b, 0x5a, 0x5a,
-  ]),
-  length: 96,
+  binary: bitsFromBytes(bitStreamBytes),
+  bytes: new Uint8Array(bitStreamBytes),
+  length: bitStreamBytes.length * 8,
 };
 
 export const mockFrame: Frame = {
-  totalBits: 1120,
+  totalBits: bitStreamBytes.length * 8,
   regions: [
     {
       id: "r1",
@@ -330,7 +339,7 @@ export const mockFrame: Frame = {
       id: "r3",
       name: "Payload",
       bitOffset: 96,
-      bitLength: 1024,
+      bitLength: 160,
       correlation: 0.92,
       confidence: 91,
     },
