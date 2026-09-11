@@ -4,13 +4,16 @@ import { Brain, GitBranch } from "lucide-react";
 import { Panel } from "@/components/ui/Panel";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ParameterCard } from "@/components/analysis/ParameterCard";
-import { ConfidenceBar } from "@/components/analysis/ConfidenceBar";
+import { ModulationPanel } from "@/components/analysis/ModulationPanel";
+import { EvidencePanel } from "@/components/analysis/EvidencePanel";
+import { HypothesisEngine } from "@/components/analysis/HypothesisEngine";
 import { Button } from "@/components/ui/Button";
 import { SpectrumChart } from "@/components/charts/SpectrumChart";
 import { WaterfallChart } from "@/components/charts/WaterfallChart";
 import { ConstellationChart } from "@/components/charts/ConstellationChart";
 import { WaveformChart } from "@/components/charts/WaveformChart";
 import { getAnalysisMock, getSignalFeatures } from "@/services/api";
+import { mockEvidence, mockHypotheses, mockModulationPrediction } from "@/services/mockData";
 import {
   generateConstellation,
   generateSpectrum,
@@ -146,42 +149,22 @@ export function AnalysisWorkspacePage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <ConstellationChart data={constellation} />
 
-        <Panel title="AI Classification" icon={<Brain className="h-3.5 w-3.5" aria-hidden="true" />}>
-          <div className="flex h-full flex-col justify-between gap-4">
-            <div className="flex items-baseline justify-between">
-              <span className="text-sm font-semibold text-text-primary">Detected Modulation</span>
-              <span className="font-mono text-lg font-semibold text-cyan-accent">
-                QPSK <span className="text-xs text-text-muted">91.4%</span>
-              </span>
-            </div>
-            <div className="space-y-2">
-              <ConfidenceBar label="QPSK" value={91} />
-              <ConfidenceBar label="8PSK" value={5} />
-              <ConfidenceBar label="BPSK" value={2} />
-              <ConfidenceBar label="16QAM" value={2} />
-            </div>
-            <div className="border-t border-border pt-3">
+        <Panel title="AI Signal Analysis" icon={<Brain className="h-3.5 w-3.5" aria-hidden="true" />}>
+          <div className="flex h-full flex-col justify-between gap-5">
+            <ModulationPanel prediction={mockModulationPrediction} />
+            <div>
               <div className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Supporting Evidence
               </div>
-              <ul className="space-y-1 text-xs text-text-secondary">
-                <li className="flex items-center gap-1.5">
-                  <span className="text-ok">✓</span> Constellation geometry
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="text-ok">✓</span> Phase distribution
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="text-ok">✓</span> Spectral characteristics
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="text-ok">✓</span> Symbol-rate compatibility
-                </li>
-              </ul>
+              <EvidencePanel items={mockEvidence} />
             </div>
           </div>
         </Panel>
       </div>
+
+      <Panel title="Hypothesis Engine" icon={<Brain className="h-3.5 w-3.5" aria-hidden="true" />}>
+        <HypothesisEngine hypotheses={mockHypotheses} />
+      </Panel>
 
       <Panel
         title="Autonomous Pipeline Discovery"

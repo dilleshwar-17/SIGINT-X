@@ -101,7 +101,7 @@ export interface PipelineStage {
     | "decode"
     | "validate"
     | "output";
-  status: "pending" | "running" | "success" | "failed";
+  status: "pending" | "running" | "success" | "failed" | "partial";
   reason?: string;
 }
 

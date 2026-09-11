@@ -4,9 +4,12 @@ import type {
   ApiStatus,
   BitStream,
   ConstellationData,
+  EvidenceItem,
   Experiment,
   Frame,
+  Hypothesis,
   ModelInfo,
+  ModulationPrediction,
   Pipeline,
   Signal,
   SignalParameters,
@@ -243,6 +246,58 @@ export const mockPipeline = (): Pipeline => ({
   },
 });
 
+export const mockModulationPrediction: ModulationPrediction = {
+  detectedModulation: "QPSK",
+  topConfidence: 91.4,
+  topLevel: "High",
+  alternatives: [
+    { modulation: "8PSK", confidence: 5.8 },
+    { modulation: "BPSK", confidence: 2.1 },
+    { modulation: "16QAM", confidence: 0.7 },
+  ],
+};
+
+export const mockEvidence: EvidenceItem[] = [
+  {
+    id: "ev-1",
+    label: "Constellation geometry",
+    status: "verified",
+    confidence: 94,
+    details:
+      "Four well-separated clusters at 45° phase offsets; nearest-neighbor distance dominates cluster spread.",
+  },
+  {
+    id: "ev-2",
+    label: "Phase distribution",
+    status: "verified",
+    confidence: 91,
+    details: "Phase histogram shows four distinct modes spaced 90° apart, consistent with QPSK symbol mapping.",
+  },
+  {
+    id: "ev-3",
+    label: "Spectral characteristics",
+    status: "verified",
+    confidence: 89,
+    details:
+      "Occupied bandwidth (~180 kHz) is consistent with 120 kSym/s under root-raised-cosine shaping (α ≈ 0.5).",
+  },
+  {
+    id: "ev-4",
+    label: "Symbol-rate compatibility",
+    status: "partial",
+    confidence: 76,
+    details:
+      "Cyclostationary estimator supports the symbol rate, but the observation window is short; medium confidence.",
+  },
+];
+
+export const mockHypotheses: Hypothesis[] = [
+  { id: "H1", description: "Signal characteristics analyzed", status: "complete", candidates: 0 },
+  { id: "H2", description: "Modulation candidates generated", status: "complete", candidates: 3 },
+  { id: "H3", description: "Parameter candidates generated", status: "complete", candidates: 2 },
+  { id: "H4", description: "Decoding candidates generated", status: "complete", candidates: 4 },
+];
+
 export const mockBitStream: BitStream = {
   binary: "0001011010110101011001011010010110100110100101101011010010110",
   bytes: new Uint8Array([
@@ -470,7 +525,22 @@ export const mockApi = {
         rank: 2,
         status: "CANDIDATE",
         decoder: "Viterbi",
-        stages: [],
+        stages: [
+          { id: "p2-1", name: "IQ Input", type: "input", status: "success" },
+          { id: "p2-2", name: "Synchronize", type: "sync", status: "success" },
+          { id: "p2-3", name: "QPSK Demodulation", type: "demod", status: "success" },
+          { id: "p2-4", name: "Block Deinterleave", type: "deinterleave", status: "success" },
+          { id: "p2-5", name: "Viterbi (partial)", type: "decode", status: "failed", reason: "Trailing symbol misinterpreted" },
+          { id: "p2-6", name: "Bit Stream", type: "output", status: "pending" },
+        ],
+        evidence: {
+          modulationConfidence: 91,
+          synchronization: 72,
+          decoderValidity: 64,
+          frameCorrelation: 58,
+          reconstruction: 66,
+          overall: 71,
+        },
       },
       {
         id: "PLN-003",
@@ -479,7 +549,22 @@ export const mockApi = {
         rank: 3,
         status: "FAILED",
         decoder: "Reed-Solomon",
-        stages: [],
+        stages: [
+          { id: "p3-1", name: "IQ Input", type: "input", status: "success" },
+          { id: "p3-2", name: "Synchronize", type: "sync", status: "success" },
+          { id: "p3-3", name: "8PSK Demodulation", type: "demod", status: "partial" },
+          { id: "p3-4", name: "Block Deinterleave", type: "deinterleave", status: "success" },
+          { id: "p3-5", name: "Reed-Solomon", type: "decode", status: "failed", reason: "Invalid codeword structure" },
+          { id: "p3-6", name: "Bit Stream", type: "output", status: "pending" },
+        ],
+        evidence: {
+          modulationConfidence: 5.8,
+          synchronization: 41,
+          decoderValidity: 12,
+          frameCorrelation: 22,
+          reconstruction: 15,
+          overall: 38,
+        },
       },
     ];
   },
