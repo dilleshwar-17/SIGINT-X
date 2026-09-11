@@ -5,7 +5,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { SignalUploader } from "@/components/signal/SignalUploader";
 import { Button } from "@/components/ui/Button";
-import type { AnalysisDepth, AnalysisMode, Signal } from "@/types";
+import { useSigintStore } from "@/store/useSigintStore";
+import type { Analysis, AnalysisDepth, AnalysisMode, Signal } from "@/types";
 
 const depths: AnalysisDepth[] = ["Quick", "Standard", "Deep"];
 const modes: { value: AnalysisMode; label: string; hint: string }[] = [
@@ -22,7 +23,20 @@ export function NewAnalysisPage() {
 
   const startAnalysis = () => {
     if (!signal) return;
-    navigate("/analyze/ANL-LOCAL");
+    const analysis: Analysis = {
+      id: `ANL-${Date.now().toString(36)}`,
+      signalId: signal.id,
+      signalFilename: signal.filename,
+      status: "COMPLETED",
+      mode,
+      depth,
+      startedAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+    };
+    useSigintStore.getState().addAnalysis(analysis);
+    useSigintStore.getState().setCurrentAnalysis(analysis);
+    useSigintStore.getState().setCurrentSignal(signal);
+    navigate(`/analyze/${analysis.id}`);
   };
 
   return (

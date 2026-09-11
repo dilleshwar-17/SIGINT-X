@@ -39,7 +39,12 @@ export function AnalysisWorkspacePage() {
   useEffect(() => {
     if (!id) return;
     setAnalysisStatus("COMPLETED");
-    getAnalysisMock(id).then(setAnalysis);
+    const stored = useSigintStore.getState().analyses.find((a) => a.id === id);
+    if (stored) {
+      setAnalysis(stored);
+    } else {
+      getAnalysisMock(id).then(setAnalysis);
+    }
     getSignalFeatures("SIG-001").then(setParams);
     useSigintStore.getState().setPipelines([
       {

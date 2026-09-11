@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FolderOpen, FileUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -6,18 +6,26 @@ import { Panel } from "@/components/ui/Panel";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import { getSignals } from "@/services/api";
+import { useSigintStore } from "@/store/useSigintStore";
 import { PanelSkeleton } from "@/components/ui/Skeleton";
 import type { Signal } from "@/types";
 
 export function SignalLibraryPage() {
   const [signals, setSignals] = useState<Signal[] | null>(null);
   const [query, setQuery] = useState("");
+  const uploadedSignals = useSigintStore((s) => s.signals);
 
   useEffect(() => {
     getSignals().then(setSignals);
   }, []);
 
-  const filtered = signals?.filter(
+  const library = useMemo(() => {
+    const catalog = signals ?? [];
+    const ids = new Set(uploadedSignals.map((s) => s.id));
+    return [...uploadedSignals, ...catalog.filter((s) => !ids.has(s.id))];
+  }, [signals, uploadedSignals]);
+
+  const filtered = library.filter(
     (s) =>
       s.filename.toLowerCase().includes(query.toLowerCase()) ||
       s.id.toLowerCase().includes(query.toLowerCase()),
@@ -49,7 +57,7 @@ export function SignalLibraryPage() {
             className="w-full max-w-sm rounded-md border border-border-light bg-bg px-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-cyan-dim focus:outline-none"
           />
         </div>
-        {filtered ? (
+        {signals ? (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-xs">
               <thead>

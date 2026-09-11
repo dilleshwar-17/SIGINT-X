@@ -19,6 +19,8 @@ interface VisualizationSettings {
 }
 
 interface SigintState {
+  signals: Signal[];
+  analyses: Analysis[];
   currentSignal: Signal | null;
   currentAnalysis: Analysis | null;
   analysisStatus: AnalysisStatus | null;
@@ -33,6 +35,8 @@ interface SigintState {
   visualizationSettings: VisualizationSettings;
   isDemoMode: boolean;
 
+  addSignal: (signal: Signal) => void;
+  addAnalysis: (analysis: Analysis) => void;
   setCurrentSignal: (signal: Signal | null) => void;
   setCurrentAnalysis: (analysis: Analysis | null) => void;
   setAnalysisStatus: (status: AnalysisStatus | null) => void;
@@ -49,6 +53,8 @@ interface SigintState {
 }
 
 export const useSigintStore = create<SigintState>((set) => ({
+  signals: [],
+  analyses: [],
   currentSignal: null,
   currentAnalysis: null,
   analysisStatus: null,
@@ -66,6 +72,13 @@ export const useSigintStore = create<SigintState>((set) => ({
     refreshRateMs: 2000,
   },
   isDemoMode: false,
+
+  addSignal: (signal) =>
+    set((state) => ({ signals: [signal, ...state.signals.filter((s) => s.id !== signal.id)] })),
+  addAnalysis: (analysis) =>
+    set((state) => ({
+      analyses: [analysis, ...state.analyses.filter((a) => a.id !== analysis.id)],
+    })),
 
   setCurrentSignal: (signal) => set({ currentSignal: signal }),
   setCurrentAnalysis: (analysis) => set({ currentAnalysis: analysis }),

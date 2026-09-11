@@ -67,6 +67,7 @@ export function SignalUploader({ onUploaded }: SignalUploaderProps) {
       status: "UPLOADED",
     };
     useSigintStore.getState().setCurrentSignal(signal);
+    useSigintStore.getState().addSignal(signal);
     setUploading(false);
     onUploaded?.(signal);
   }, [file, onUploaded]);
