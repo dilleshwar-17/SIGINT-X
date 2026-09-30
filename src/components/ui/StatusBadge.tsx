@@ -19,7 +19,7 @@ const toneMap: Record<string, string> = {
   READY: "text-ok border-ok/30 bg-ok/10",
   BEST: "text-cyan-accent border-cyan-accent/30 bg-cyan-accent/10",
   CANDIDATE: "text-info border-info/30 bg-info/10",
-  PROCESSING: "text-cyan-accent border-cyan-accent/30 bg-cyan-accent/10 animate-pulse",
+  PROCESSING: "text-cyan-accent border-cyan-accent/30 bg-cyan-accent/10",
   QUEUED: "text-text-secondary border-border-light bg-panel",
   UPLOADED: "text-info border-info/30 bg-info/10",
   FAILED: "text-err border-err/30 bg-err/10",
@@ -40,7 +40,7 @@ const dotMap: Record<string, string> = {
   READY: "bg-ok",
   OPERATIONAL: "bg-ok",
   BEST: "bg-cyan-accent",
-  PROCESSING: "bg-cyan-accent animate-pulse",
+  PROCESSING: "bg-cyan-accent",
   FAILED: "bg-err",
   ANALYSIS_FAILED: "bg-err",
   QUEUED: "bg-text-muted",
@@ -49,14 +49,29 @@ const dotMap: Record<string, string> = {
   CANCELLED: "bg-text-muted",
 };
 
+const liveMap: Record<string, boolean> = {
+  PROCESSING: true,
+  QUEUED: true,
+};
+
 export function StatusBadge({ status }: { status: StatusLike }) {
   const tone = toneMap[status] ?? "text-text-secondary border-border-light bg-panel";
+  const live = liveMap[status] ?? false;
+
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide ${tone}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-[3px] font-mono text-[10px] font-medium uppercase tracking-wider backdrop-blur-sm ${tone}`}
     >
       {dotMap[status] && (
-        <span className={`h-1 w-1 rounded-full ${dotMap[status]}`} aria-hidden="true" />
+        <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+          {live && (
+            <span
+              className={`absolute inline-flex h-full w-full rounded-full ${dotMap[status]}`}
+              style={{ animation: "pulse-ring 1.9s ease-out infinite" }}
+            />
+          )}
+          <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${dotMap[status]}`} />
+        </span>
       )}
       {status}
     </span>

@@ -3,7 +3,7 @@ import { Grid3X3 } from "lucide-react";
 import type { ConstellationData } from "@/types";
 import { ChartFrame } from "./ChartFrame";
 import { PlotlyChart, type PlotData, type PlotLayout } from "./PlotlyChart";
-import { baseConfig, baseLayout, plotColors, plotFont } from "./PlotTheme";
+import { baseConfig, baseLayout, labelFont, plotColors } from "./PlotTheme";
 
 interface ConstellationChartProps {
   data: ConstellationData;
@@ -52,18 +52,18 @@ export function ConstellationChart({ data, height = 320 }: ConstellationChartPro
     ...baseLayout,
     showlegend: true,
     legend: {
-      font: plotFont,
+      font: labelFont,
       bgcolor: "rgba(0,0,0,0)",
     },
     xaxis: {
       ...baseLayout.xaxis,
-      title: { text: "I", font: plotFont },
+      title: { text: "I", font: labelFont },
       zerolinecolor: plotColors.gridZero,
       domain: [0, 1],
     },
     yaxis: {
       ...baseLayout.yaxis,
-      title: { text: "Q", font: plotFont },
+      title: { text: "Q", font: labelFont },
       scaleanchor: "x",
       scaleratio: 1,
     },
@@ -73,7 +73,6 @@ export function ConstellationChart({ data, height = 320 }: ConstellationChartPro
     <ChartFrame
       title="Constellation"
       subtitle={`${data.iSamples.length.toLocaleString()} observed samples`}
-      badge="DEMO DATA"
       toolbar={
         <button
           type="button"
@@ -82,8 +81,8 @@ export function ConstellationChart({ data, height = 320 }: ConstellationChartPro
           title="Toggle reference points"
           className={
             showReference
-              ? "rounded p-1 text-cyan-accent"
-              : "rounded p-1 text-text-muted hover:text-text-primary"
+              ? "inline-flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-accent/10 text-cyan-accent"
+              : "inline-flex h-7 w-7 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-white/5 hover:text-text-primary"
           }
         >
           <Grid3X3 className="h-3.5 w-3.5" aria-hidden="true" />

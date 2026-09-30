@@ -30,8 +30,12 @@ export function ModelsPage() {
       : 0;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <PageHeader title="Models" subtitle="Deployed analysis and classification models." />
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Registry"
+        title="Models"
+        subtitle="Deployed analysis and classification models backing the pipeline."
+      />
 
       {models ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -75,7 +79,7 @@ export function ModelsPage() {
             {models.map((m) => (
               <article
                 key={m.id}
-                className="rounded-md border border-border-light bg-surface p-4"
+                className="panel-surface panel-surface-hover p-4"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -107,9 +111,9 @@ export function ModelsPage() {
                       {(m.validationAccuracy * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-sm bg-bg" role="presentation">
+                  <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]" role="presentation">
                     <div
-                      className={`h-full rounded-sm ${tone(m.validationAccuracy)}`}
+                      className={`h-full rounded-full ${tone(m.validationAccuracy)} transition-[width] duration-700 ease-out`}
                       style={{ width: `${m.validationAccuracy * 100}%` }}
                     />
                   </div>

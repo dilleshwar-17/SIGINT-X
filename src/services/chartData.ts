@@ -4,7 +4,7 @@ import type {
   WaterfallData,
 } from "@/types";
 
-// Deterministic PRNG (mulberry32) so demo datasets are stable across renders.
+// Deterministic PRNG (mulberry32) so generated datasets are stable across renders.
 function mulberry32(seed: number) {
   let a = seed >>> 0;
   return () => {

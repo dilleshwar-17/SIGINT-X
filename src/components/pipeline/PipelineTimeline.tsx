@@ -15,7 +15,10 @@ function StageRow({ stage }: { stage: PipelineStage }) {
           {stage.status === "partial" && <X className="h-4 w-4 text-warn" aria-hidden="true" />}
           {stage.status === "running" && <CircleDashed className="h-4 w-4 animate-spin text-cyan-accent" aria-hidden="true" />}
           {stage.status === "pending" && (
-            <span className="h-2.5 w-2.5 rounded-full border border-border-light" aria-hidden="true" />
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full border border-border-light/80"
+              aria-hidden="true"
+            />
           )}
         </div>
         <div className="min-w-0 flex-1">
@@ -46,7 +49,10 @@ export function PipelineTimeline({ pipeline }: PipelineTimelineProps) {
 
   return (
     <ol className="relative">
-      <div aria-hidden="true" className="absolute bottom-2 left-[11px] top-2 w-px bg-border" />
+      <div
+          aria-hidden="true"
+          className="absolute bottom-2 left-[11px] top-2 w-px bg-gradient-to-b from-cyan-accent/50 via-border-light to-transparent"
+        />
       {stages.map((stage) => (
         <StageRow key={stage.id} stage={stage} />
       ))}

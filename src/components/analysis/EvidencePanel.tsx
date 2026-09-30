@@ -25,29 +25,44 @@ export function EvidencePanel({ items }: EvidencePanelProps) {
   };
 
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-2">
       {items.map((item) => {
         const expanded = open.has(item.id);
         return (
-          <li key={item.id} className="overflow-hidden rounded-md border border-border bg-surface">
+          <li
+            key={item.id}
+            className="overflow-hidden rounded-lg border border-border/70 bg-white/[0.02] transition-colors duration-200 hover:border-border-light/80"
+          >
             <button
               type="button"
               onClick={() => toggle(item.id)}
               aria-expanded={expanded}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-text-primary transition-colors hover:bg-panel-hover focus-ring"
+              className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-xs text-text-primary transition-colors hover:bg-white/[0.035] focus-ring"
             >
               <StatusIcon status={item.status} />
               <span className="flex-1">{item.label}</span>
               {item.confidence != null && (
-                <span className="font-mono text-[10px] text-text-muted">{item.confidence}%</span>
+                <span
+                  className={`font-mono text-[10px] tabular-nums ${
+                    item.status === "verified"
+                      ? "text-ok"
+                      : item.status === "partial"
+                        ? "text-warn"
+                        : "text-err"
+                  }`}
+                >
+                  {item.confidence}%
+                </span>
               )}
               <ChevronRight
-                className={`h-3.5 w-3.5 text-text-muted transition-transform ${expanded ? "rotate-90" : ""}`}
+                className={`h-3.5 w-3.5 text-text-muted transition-transform duration-200 ${
+                  expanded ? "rotate-90" : ""
+                }`}
                 aria-hidden="true"
               />
             </button>
             {expanded && item.details && (
-              <p className="border-t border-border px-3 py-2 text-[11px] leading-relaxed text-text-secondary">
+              <p className="animate-fade-in border-t border-border/70 bg-black/20 px-3 py-2.5 text-[11px] leading-relaxed text-text-secondary">
                 {item.details}
               </p>
             )}

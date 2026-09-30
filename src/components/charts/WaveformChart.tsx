@@ -1,7 +1,7 @@
 import type { WaveformData } from "@/types";
 import { ChartFrame } from "./ChartFrame";
 import { PlotlyChart, type PlotData, type PlotLayout } from "./PlotlyChart";
-import { baseConfig, baseLayout, plotColors, plotFont } from "./PlotTheme";
+import { baseConfig, baseLayout, labelFont, plotColors } from "./PlotTheme";
 
 interface WaveformChartProps {
   data: WaveformData;
@@ -33,14 +33,14 @@ export function WaveformChart({ data, height = 320 }: WaveformChartProps) {
   const layout: PlotLayout = {
     ...baseLayout,
     showlegend: true,
-    legend: { font: plotFont, bgcolor: "rgba(0,0,0,0)", orientation: "h" },
+    legend: { font: labelFont, bgcolor: "rgba(0,0,0,0)", orientation: "h" },
     xaxis: {
       ...baseLayout.xaxis,
-      title: { text: "Time (ms)", font: plotFont },
+      title: { text: "Time (ms)", font: labelFont },
     },
     yaxis: {
       ...baseLayout.yaxis,
-      title: { text: "Amplitude", font: plotFont },
+      title: { text: "Amplitude", font: labelFont },
     },
   };
 
@@ -48,7 +48,6 @@ export function WaveformChart({ data, height = 320 }: WaveformChartProps) {
     <ChartFrame
       title="Waveform"
       subtitle="Baseband I/Q samples"
-      badge="DEMO DATA"
     >
       <PlotlyChart data={traces} layout={layout} config={baseConfig} height={height} />
     </ChartFrame>

@@ -148,7 +148,11 @@ export function BitStreamViewer({ stream }: BitStreamViewerProps) {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex rounded-md border border-border bg-surface p-0.5" role="tablist" aria-label="Bit stream view">
+        <div
+          className="inline-flex rounded-lg border border-border-light/70 bg-white/[0.02] p-0.5"
+          role="tablist"
+          aria-label="Bit stream view"
+        >
           {(["binary", "hex", "ascii"] as View[]).map((v) => (
             <button
               key={v}
@@ -156,8 +160,10 @@ export function BitStreamViewer({ stream }: BitStreamViewerProps) {
               role="tab"
               aria-selected={view === v}
               onClick={() => setView(v)}
-              className={`rounded px-2.5 py-1 font-mono text-[11px] uppercase transition-colors focus-ring ${
-                view === v ? "bg-cyan-dim/80 text-bg" : "text-text-secondary hover:text-text-primary"
+              className={`rounded-md px-2.5 py-1 font-mono text-[11px] uppercase transition-all duration-200 focus-ring ${
+                view === v
+                  ? "bg-gradient-to-br from-cyan-accent to-cyan-dim font-medium text-[#04121a] shadow-[0_8px_20px_-10px_rgba(34,211,238,0.9)]"
+                  : "text-text-secondary hover:bg-white/[0.05] hover:text-text-primary"
               }`}
             >
               {v}
@@ -172,7 +178,7 @@ export function BitStreamViewer({ stream }: BitStreamViewerProps) {
               <select
                 value={grouping}
                 onChange={(e) => setGrouping(Number(e.target.value) as 4 | 8)}
-                className="rounded border border-border-light bg-panel px-1.5 py-0.5 font-mono text-[11px] text-text-primary focus:border-cyan-dim focus:outline-none"
+                className="rounded-lg border border-border-light/70 bg-bg/60 px-2 py-1 font-mono text-[11px] text-text-primary transition-colors focus:border-cyan-accent/60 focus:outline-none"
                 aria-label="Bit grouping"
               >
                 <option value={8}>8 bits</option>
@@ -183,7 +189,7 @@ export function BitStreamViewer({ stream }: BitStreamViewerProps) {
           <button
             type="button"
             onClick={copy}
-            className="inline-flex items-center gap-1.5 rounded border border-border-light bg-panel px-2.5 py-1 text-[11px] text-text-secondary transition-colors hover:border-cyan-dim/50 hover:text-text-primary focus-ring"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border-light/70 bg-white/[0.03] px-2.5 py-1.5 text-[11px] text-text-secondary transition-all duration-200 hover:border-cyan-accent/50 hover:bg-cyan-accent/[0.07] hover:text-text-primary focus-ring"
           >
             {copied ? (
               <Check className="h-3 w-3 text-ok" aria-hidden="true" />
@@ -196,14 +202,17 @@ export function BitStreamViewer({ stream }: BitStreamViewerProps) {
       </div>
 
       <div className="relative mb-3">
-        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" aria-hidden="true" />
+        <Search
+          className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted"
+          aria-hidden="true"
+        />
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search bit pattern (e.g. 10110100)..."
+          placeholder="Search bit pattern (e.g. 10110100)…"
           aria-label="Search bit stream"
-          className="w-full rounded-md border border-border-light bg-bg py-1.5 pl-8 pr-3 font-mono text-xs text-text-primary placeholder:text-text-muted focus:border-cyan-dim focus:outline-none"
+          className="w-full rounded-lg border border-border-light/70 bg-bg/60 py-2 pl-9 pr-24 font-mono text-xs text-text-primary placeholder:text-text-muted transition-colors focus:border-cyan-accent/60 focus:bg-cyan-accent/[0.04] focus:outline-none"
         />
         {query && (
           <span className={`absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] ${hasMatch ? "text-warn" : "text-err"}`}>
@@ -214,7 +223,7 @@ export function BitStreamViewer({ stream }: BitStreamViewerProps) {
 
       <pre
         ref={preRef}
-        className="max-h-[320px] overflow-auto rounded-md border border-border bg-surface p-3 font-mono text-[12px] leading-[1.7]"
+        className="max-h-[320px] overflow-auto rounded-lg border border-border/70 bg-black/25 p-3.5 font-mono text-[12px] leading-[1.7]"
         role="img"
         aria-label={`${view} view of decoded bit stream`}
       >
@@ -232,7 +241,7 @@ export function BitStreamViewer({ stream }: BitStreamViewerProps) {
         )}
       </pre>
 
-      <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-widest text-text-muted">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[9px] uppercase tracking-[0.16em] text-text-muted">
         <span>
           {stream.length} bits · {stream.bytes.length} bytes
         </span>

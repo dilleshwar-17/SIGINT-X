@@ -1,7 +1,7 @@
 import type { SpectrumData } from "@/types";
 import { ChartFrame } from "./ChartFrame";
 import { PlotlyChart, type PlotData, type PlotLayout } from "./PlotlyChart";
-import { baseConfig, baseLayout, plotColors, plotFont } from "./PlotTheme";
+import { baseConfig, baseLayout, labelFont, plotColors } from "./PlotTheme";
 
 interface SpectrumChartProps {
   data: SpectrumData;
@@ -51,12 +51,12 @@ export function SpectrumChart({ data, height = 320 }: SpectrumChartProps) {
     showlegend: false,
     xaxis: {
       ...baseLayout.xaxis,
-      title: { text: "Frequency (Hz)", font: plotFont },
+      title: { text: "Frequency (Hz)", font: labelFont },
       range: [data.frequencies[0], data.frequencies[data.frequencies.length - 1]],
     },
     yaxis: {
       ...baseLayout.yaxis,
-      title: { text: "dBm", font: plotFont },
+      title: { text: "dBm", font: labelFont },
     },
     shapes: [
       {
@@ -84,7 +84,7 @@ export function SpectrumChart({ data, height = 320 }: SpectrumChartProps) {
         yanchor: "bottom",
         text: `${bwKHz.toFixed(0)} kHz BW`,
         showarrow: false,
-        font: { ...plotFont, color: plotColors.ok },
+        font: { ...labelFont, color: plotColors.ok },
       },
     ],
   };
@@ -92,8 +92,7 @@ export function SpectrumChart({ data, height = 320 }: SpectrumChartProps) {
   return (
     <ChartFrame
       title="Spectrum"
-      subtitle={`Peak ${(centerFreq / 1000).toFixed(0)} kHz · ${bwKHz.toFixed(0)} kHz bandwidth`}
-      badge="DEMO DATA"
+      subtitle={`Peak ${(centerFreq / 1000).toFixed(0)} kHz ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${bwKHz.toFixed(0)} kHz bandwidth`}
     >
       <PlotlyChart data={traces} layout={layout} config={baseConfig} height={height} />
     </ChartFrame>

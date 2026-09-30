@@ -32,9 +32,9 @@ export function PipelineEvidence({ pipeline }: PipelineEvidenceProps) {
           <ConfidenceBar label="Reconstruction" value={e.reconstruction} />
         </div>
       </dl>
-      <div className="mt-4 border-t border-border-light pt-4">
-        <div className="mb-1.5 flex items-center justify-between">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+      <div className="mt-4 border-t border-border/70 pt-4">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
             Overall
           </span>
           <span className="font-mono text-sm font-semibold text-cyan-accent">{e.overall}%</span>

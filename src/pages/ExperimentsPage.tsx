@@ -29,8 +29,9 @@ export function ExperimentsPage() {
       : 0;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="space-y-6">
       <PageHeader
+        eyebrow="Research"
         title="Experiments"
         subtitle="Research benchmarks for the analysis models and pipeline discovery."
       />
@@ -88,9 +89,12 @@ export function ExperimentsPage() {
                     {(e.accuracy * 100).toFixed(1)}%
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-sm bg-bg" role="presentation">
+                <div
+                  className="h-2 overflow-hidden rounded-full bg-white/[0.06]"
+                  role="presentation"
+                >
                   <div
-                    className={`h-full rounded-sm ${tone(e.accuracy)}`}
+                    className={`h-full rounded-full ${tone(e.accuracy)} transition-[width] duration-700 ease-out`}
                     style={{ width: `${e.accuracy * 100}%` }}
                   />
                 </div>
@@ -111,39 +115,47 @@ export function ExperimentsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[820px] text-left text-xs">
               <thead>
-                <tr className="border-b border-border-light text-[10px] uppercase tracking-widest text-text-muted">
-                  <th className="px-4 py-2.5 font-medium">Experiment</th>
-                  <th className="px-3 py-2.5 font-medium">Model</th>
-                  <th className="px-3 py-2.5 font-medium">Dataset</th>
-                  <th className="px-3 py-2.5 font-medium">Accuracy</th>
-                  <th className="px-3 py-2.5 font-medium">F1</th>
-                  <th className="px-3 py-2.5 font-medium">Top-1</th>
-                  <th className="px-3 py-2.5 font-medium">Top-3</th>
-                  <th className="px-3 py-2.5 font-medium">BER</th>
-                  <th className="px-3 py-2.5 font-medium">Version</th>
-                  <th className="px-3 py-2.5 font-medium">Date</th>
+                <tr className="border-b border-border/70 text-[9px] uppercase tracking-[0.16em] text-text-muted">
+                  <th className="px-4 py-2.5 font-semibold">Experiment</th>
+                  <th className="px-3 py-2.5 font-semibold">Model</th>
+                  <th className="px-3 py-2.5 font-semibold">Dataset</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">Accuracy</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">F1</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">Top-1</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">Top-3</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">BER</th>
+                  <th className="px-3 py-2.5 font-semibold">Version</th>
+                  <th className="px-3 py-2.5 font-semibold">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-border/60">
                 {experiments.map((e) => (
-                  <tr key={e.id} className="hover:bg-panel-hover">
-                    <td className="px-4 py-2.5">
+                  <tr key={e.id} className="transition-colors hover:bg-white/[0.035]">
+                    <td className="px-4 py-3">
                       <div className="font-medium text-text-primary">{e.name}</div>
                       <div className="mt-0.5 text-[11px] text-text-muted">{e.description}</div>
                     </td>
-                    <td className="px-3 py-2.5 font-mono text-text-secondary">{e.model}</td>
-                    <td className="px-3 py-2.5 text-text-secondary">{e.dataset}</td>
-                    <td className="px-3 py-2.5 font-mono text-text-primary">
-                      <span className={`${tone(e.accuracy)} rounded px-1.5 py-0.5 text-[10px] text-bg`}>
+                    <td className="px-3 py-3 font-mono text-text-secondary">{e.model}</td>
+                    <td className="px-3 py-3 text-text-secondary">{e.dataset}</td>
+                    <td className="px-3 py-3 text-right">
+                      <span
+                        className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-medium text-[#04121a] ${tone(e.accuracy)}`}
+                      >
                         {(e.accuracy * 100).toFixed(1)}%
                       </span>
                     </td>
-                    <td className="px-3 py-2.5 font-mono text-text-primary">{e.f1.toFixed(3)}</td>
-                    <td className="px-3 py-2.5 font-mono text-text-muted">{e.top1 ? (e.top1 * 100).toFixed(1) + "%" : "—"}</td>
-                    <td className="px-3 py-2.5 font-mono text-text-muted">{e.top3 ? (e.top3 * 100).toFixed(1) + "%" : "—"}</td>
-                    <td className="px-3 py-2.5 font-mono text-text-muted">{e.ber?.toFixed(3) ?? "—"}</td>
-                    <td className="px-3 py-2.5 font-mono text-text-muted">{e.version}</td>
-                    <td className="px-3 py-2.5 font-mono text-text-muted">{e.date}</td>
+                    <td className="px-3 py-3 text-right font-mono text-text-primary">{e.f1.toFixed(3)}</td>
+                    <td className="px-3 py-3 text-right font-mono text-text-muted">
+                      {e.top1 ? (e.top1 * 100).toFixed(1) + "%" : "—"}
+                    </td>
+                    <td className="px-3 py-3 text-right font-mono text-text-muted">
+                      {e.top3 ? (e.top3 * 100).toFixed(1) + "%" : "—"}
+                    </td>
+                    <td className="px-3 py-3 text-right font-mono text-text-muted">
+                      {e.ber?.toFixed(3) ?? "—"}
+                    </td>
+                    <td className="px-3 py-3 font-mono text-text-muted">{e.version}</td>
+                    <td className="px-3 py-3 font-mono text-text-muted">{e.date}</td>
                   </tr>
                 ))}
               </tbody>

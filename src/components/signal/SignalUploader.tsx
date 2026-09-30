@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { FileUp, File, X } from "lucide-react";
+import { FileUp, File, X, CheckCircle2, Radio } from "lucide-react";
 import { useSigintStore } from "@/store/useSigintStore";
 import type { Signal } from "@/types";
 
@@ -21,6 +21,7 @@ export function SignalUploader({ onUploaded }: SignalUploaderProps) {
   const [error, setError] = useState<string | null>(null);
   const [validated, setValidated] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const accept = useCallback((f: File) => {
@@ -55,8 +56,15 @@ export function SignalUploader({ onUploaded }: SignalUploaderProps) {
   const handleUpload = useCallback(async () => {
     if (!file) return;
     setUploading(true);
+    setProgress(0);
+
     // Mock integration: replace with uploadSignal(file) when backend is wired.
-    await new Promise((r) => setTimeout(r, 800));
+    const steps = [18, 42, 68, 88, 100];
+    for (const step of steps) {
+      await new Promise((r) => setTimeout(r, 160));
+      setProgress(step);
+    }
+
     const signal: Signal = {
       id: "SIG-LOCAL",
       filename: file.name,
@@ -72,91 +80,113 @@ export function SignalUploader({ onUploaded }: SignalUploaderProps) {
     onUploaded?.(signal);
   }, [file, onUploaded]);
 
+  const hasFile = Boolean(file && validated);
+
   return (
     <div>
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label="Upload a signal file (IQ or WAV)"
-        onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            inputRef.current?.click();
-          }
-        }}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragActive(true);
-        }}
-        onDragLeave={() => setDragActive(false)}
-        onDrop={onDrop}
-        className={`flex min-h-[220px] cursor-pointer flex-col items-center justify-center gap-3 rounded-md border-2 border-dashed p-8 text-center transition-colors focus-ring ${
-          dragActive
-            ? "border-cyan-accent bg-cyan-accent/10"
-            : "border-border-light bg-panel hover:border-cyan-dim/60"
-        }`}
-      >
-        <FileUp className="h-10 w-10 text-cyan-accent" aria-hidden="true" />
-        <span className="text-sm font-semibold uppercase tracking-widest text-text-primary">
-          Drop Signal File
-        </span>
-        <span className="font-mono text-xs text-text-muted">IQ / WAV</span>
-        <span className="text-xs text-text-secondary">
-          Drag &amp; drop or <span className="text-cyan-accent">browse files</span>
-        </span>
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".iq,.wav"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) accept(f);
-            e.target.value = "";
+      {!hasFile && (
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="Upload a signal file (IQ or WAV)"
+          onClick={() => inputRef.current?.click()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
           }}
-        />
-      </div>
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={onDrop}
+          className={`group relative flex min-h-[230px] cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border-2 border-dashed p-8 text-center transition-all duration-300 focus-ring ${
+            dragActive
+              ? "scale-[1.01] border-cyan-accent bg-cyan-accent/[0.12] shadow-[0_20px_50px_-24px_rgba(34,211,238,0.9)]"
+              : "border-border-light/80 bg-white/[0.02] hover:border-cyan-accent/60 hover:bg-cyan-accent/[0.05]"
+          }`}
+        >
+          <span
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-accent/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            aria-hidden="true"
+          />
+          <span
+            className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-accent/25 bg-gradient-to-br from-cyan-accent/20 to-violet-dim/15 text-cyan-accent transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_14px_34px_-14px_rgba(34,211,238,0.9)]"
+            aria-hidden="true"
+          >
+            <FileUp className="h-6 w-6" />
+          </span>
+
+          <span className="text-sm font-semibold uppercase tracking-[0.16em] text-text-primary">
+            Drop Signal File
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-text-muted">
+            .iq · .wav
+          </span>
+          <span className="text-xs text-text-secondary">
+            Drag &amp; drop or <span className="text-cyan-accent">browse files</span>
+          </span>
+
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".iq,.wav"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) accept(f);
+              e.target.value = "";
+            }}
+          />
+        </div>
+      )}
 
       {error && (
         <div
           role="alert"
-          className="mt-3 flex items-start gap-2 rounded-md border border-err/40 bg-err/10 px-3 py-2 text-xs text-err"
+          className="animate-fade-in mt-3 flex items-start gap-2 rounded-lg border border-err/40 bg-err/10 px-3 py-2.5 text-xs text-err"
         >
           <span>{error}</span>
           <button
             type="button"
             aria-label="Dismiss error"
             onClick={() => setError(null)}
-            className="ml-auto focus-ring"
+            className="ml-auto rounded transition-colors hover:text-white focus-ring"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </div>
       )}
 
-      {file && validated && (
-        <div className="mt-4 rounded-md border border-border bg-panel p-4">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
-            File
+      {hasFile && (
+        <div className="animate-fade-up panel-surface p-4" style={{ borderColor: "rgba(52,211,153,0.28)" }}>
+          <div className="mb-3 flex items-center gap-2">
+            <Radio className="h-3.5 w-3.5 text-ok" aria-hidden="true" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+              Selected file
+            </span>
           </div>
+
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <File className="h-5 w-5 shrink-0 text-info" aria-hidden="true" />
-              <div>
-                <div className="font-mono text-sm text-text-primary">{file.name}</div>
-                <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-text-muted">
-                  <span className="uppercase">
-                    Format: Complex {file.name.split(".").pop()?.toUpperCase()}
-                  </span>
-                  <span>Size: {formatBytes(file.size)}</span>
-                  <span>Duration: 4.21 sec (estimate)</span>
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="icon-chip h-9 w-9 shrink-0 text-info">
+                <File className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <div className="truncate font-mono text-sm text-text-primary">{file!.name}</div>
+                <div className="mt-0.5 flex flex-wrap gap-x-3 font-mono text-[11px] text-text-muted">
+                  <span>Format: {file!.name.split(".").pop()?.toUpperCase()}</span>
+                  <span>Size: {formatBytes(file!.size)}</span>
+                  <span>≈ 4.21 s</span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1.5 text-xs text-ok">
-                <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden="true" />
+
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="flex items-center gap-1.5 rounded-full border border-ok/30 bg-ok/10 px-2 py-0.5 font-mono text-[10px] text-ok">
+                <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
                 Valid
               </span>
               <button
@@ -166,7 +196,7 @@ export function SignalUploader({ onUploaded }: SignalUploaderProps) {
                   setValidated(false);
                 }}
                 aria-label="Remove file"
-                className="rounded p-1 text-text-muted transition-colors hover:bg-panel-hover hover:text-text-primary focus-ring"
+                className="rounded-lg p-1.5 text-text-muted transition-colors hover:bg-white/[0.06] hover:text-err focus-ring"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -175,11 +205,11 @@ export function SignalUploader({ onUploaded }: SignalUploaderProps) {
         </div>
       )}
 
-      {file && validated && !uploading && (
+      {hasFile && !uploading && (
         <button
           type="button"
           onClick={handleUpload}
-          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-cyan-dim/80 px-4 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-cyan-accent focus-ring"
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-br from-cyan-accent to-cyan-dim px-4 py-2.5 text-sm font-semibold text-[#04121a] transition-all duration-200 hover:from-white hover:to-cyan-accent hover:shadow-[0_14px_34px_-16px_rgba(34,211,238,0.95)] focus-ring"
         >
           <FileUp className="h-4 w-4" aria-hidden="true" />
           Upload Signal
@@ -187,9 +217,23 @@ export function SignalUploader({ onUploaded }: SignalUploaderProps) {
       )}
 
       {uploading && (
-        <div className="mt-4 flex items-center justify-center gap-2 rounded-md border border-border bg-panel px-4 py-2.5 text-sm text-text-secondary">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-cyan-accent/30 border-t-cyan-accent" aria-hidden="true" />
-          Uploading signal...
+        <div className="animate-fade-up panel-surface mt-4 px-4 py-3.5">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="flex items-center gap-2 text-text-secondary">
+              <span
+                className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-cyan-accent/25 border-t-cyan-accent"
+                aria-hidden="true"
+              />
+              Uploading signal…
+            </span>
+            <span className="font-mono text-xs text-cyan-accent">{progress}%</span>
+          </div>
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-accent to-violet-accent transition-[width] duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       )}
     </div>

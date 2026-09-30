@@ -15,15 +15,23 @@ export function ModulationPanel({ prediction }: ModulationPanelProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border border-cyan-accent/25 bg-cyan-accent/5 p-3">
-        <div className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+      <div
+        className="rounded-xl border border-cyan-accent/25 p-3.5"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(34,211,238,0.12) 0%, rgba(124,58,237,0.06) 60%, transparent 100%)",
+        }}
+      >
+        <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
           Detected Modulation
         </div>
-        <div className="mt-1 flex items-baseline justify-between">
-          <span className="font-mono text-xl font-semibold text-cyan-accent">
+        <div className="mt-1.5 flex items-baseline justify-between">
+          <span className="text-gradient font-mono text-2xl font-semibold">
             {prediction.detectedModulation}
           </span>
-          <span className="font-mono text-sm text-text-secondary">{prediction.topConfidence}%</span>
+          <span className="font-mono text-sm tabular-nums text-text-secondary">
+            {prediction.topConfidence}%
+          </span>
         </div>
         <div className="mt-2">
           <ConfidenceBar value={prediction.topConfidence} />
@@ -36,7 +44,7 @@ export function ModulationPanel({ prediction }: ModulationPanelProps) {
       </div>
 
       <div>
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
           Alternatives
         </div>
         <div className="space-y-1.5">

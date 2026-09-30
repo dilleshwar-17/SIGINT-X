@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { PipelineGraph } from "@/components/pipeline/PipelineGraph";
 import { PipelineTimeline } from "@/components/pipeline/PipelineTimeline";
 import { PipelineEvidence } from "@/components/pipeline/PipelineEvidence";
+import { Button } from "@/components/ui/Button";
 import { getPipelines } from "@/services/api";
 import { PanelSkeleton } from "@/components/ui/Skeleton";
 import type { Pipeline } from "@/types";
@@ -18,45 +19,68 @@ export function PipelineExplorerPage() {
 
   useEffect(() => {
     if (!id) return;
-    getPipelines(id).then((data) => {
-      setPipelines(data);
-      setSelectedId(data[0]?.id ?? null);
-    });
+    let cancelled = false;
+    getPipelines(id)
+      .then((data) => {
+        if (cancelled) return;
+        const list = Array.isArray(data) ? data : [];
+        setPipelines(list);
+        setSelectedId(list[0]?.id ?? null);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        console.error("Failed to load pipelines", err);
+        setPipelines([]);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const selected = pipelines?.find((p) => p.id === selectedId) ?? pipelines?.[0] ?? null;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="space-y-6">
       <PageHeader
+        eyebrow="Discovery"
         title="Pipeline Explorer"
         subtitle="Candidate decoding pipelines discovered for this signal, ranked by evidence."
+        actions={
+          <Link to={`/analyze/${id}/report`}>
+            <Button variant="secondary" size="md">
+              View Report
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Button>
+          </Link>
+        }
       />
 
       <Panel
         title="Pipeline Comparison"
+        subtitle={`${pipelines?.length ?? 0} candidates ranked by evidence score`}
         icon={<GitBranch className="h-3.5 w-3.5" aria-hidden="true" />}
         pad={false}
+        tone={selected?.status === "BEST" ? "cyan" : "default"}
       >
         {pipelines ? (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-xs">
               <thead>
-                <tr className="border-b border-border-light text-[10px] uppercase tracking-widest text-text-muted">
-                  <th className="px-4 py-2.5 font-medium">Pipeline</th>
-                  <th className="px-3 py-2.5 font-medium">Score</th>
-                  <th className="px-3 py-2.5 font-medium">Decoder</th>
-                  <th className="px-3 py-2.5 font-medium">Status</th>
-                  <th className="px-3 py-2.5 font-medium">Inspect</th>
+                <tr className="border-b border-border/70 text-[9px] uppercase tracking-[0.16em] text-text-muted">
+                  <th className="px-4 py-2.5 font-semibold">Pipeline</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">Score</th>
+                  <th className="px-3 py-2.5 font-semibold">Decoder</th>
+                  <th className="px-3 py-2.5 font-semibold">Status</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">Inspect</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-border/60">
                 {pipelines.map((p) => (
                   <tr
                     key={p.id}
                     onClick={() => setSelectedId(p.id)}
-                    className={`cursor-pointer ${
-                      selected?.id === p.id ? "bg-cyan-accent/5" : "hover:bg-panel-hover"
+                    className={`cursor-pointer transition-colors ${
+                      selected?.id === p.id ? "bg-cyan-accent/[0.07]" : "hover:bg-white/[0.035]"
                     }`}
                   >
                     <td className="px-4 py-3 font-mono text-text-primary">
@@ -64,13 +88,19 @@ export function PipelineExplorerPage() {
                         #{p.rank} {p.stageNames.join(" + ")}
                       </span>
                     </td>
-                    <td className="px-3 py-3 font-mono text-text-secondary">{p.score.toFixed(2)}</td>
+                    <td className="px-3 py-3 text-right font-mono text-text-secondary">
+                      {p.score.toFixed(2)}
+                    </td>
                     <td className="px-3 py-3 font-mono text-text-secondary">{p.decoder}</td>
                     <td className="px-3 py-3">
                       <StatusBadge status={p.status} />
                     </td>
-                    <td className={`px-3 py-3 ${selected?.id === p.id ? "text-cyan-accent" : "text-text-muted"}`}>
-                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                    <td
+                      className={`px-3 py-3 text-right ${
+                        selected?.id === p.id ? "text-cyan-accent" : "text-text-muted"
+                      }`}
+                    >
+                      <ChevronRight className="h-4 w-4 inline" aria-hidden="true" />
                     </td>
                   </tr>
                 ))}
@@ -107,20 +137,11 @@ export function PipelineExplorerPage() {
             </Panel>
           </div>
 
-          <Panel title="Processing Timeline">
+          <Panel title="Processing Timeline" subtitle={selected.decoder}>
             <PipelineTimeline pipeline={selected} />
           </Panel>
         </>
       )}
-
-      <div className="flex justify-end">
-        <Link
-          to={`/analyze/${id}/report`}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border-light bg-panel px-3.5 py-1.5 text-sm text-text-primary transition-colors hover:border-cyan-dim/50 hover:bg-panel-hover"
-        >
-          View Report <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
-        </Link>
-      </div>
     </div>
   );
 }

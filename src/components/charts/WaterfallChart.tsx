@@ -1,7 +1,7 @@
 import type { WaterfallData } from "@/types";
 import { ChartFrame } from "./ChartFrame";
 import { PlotlyChart, type PlotData, type PlotLayout } from "./PlotlyChart";
-import { baseConfig, baseLayout, plotFont } from "./PlotTheme";
+import { baseConfig, baseLayout, labelFont, plotFont } from "./PlotTheme";
 
 interface WaterfallChartProps {
   data: WaterfallData;
@@ -23,7 +23,7 @@ export function WaterfallChart({ data, height = 320 }: WaterfallChartProps) {
         [1, "#7dd3fc"],
       ],
       colorbar: {
-        title: { text: "dBm", font: plotFont },
+        title: { text: "dBm", font: labelFont },
         tickfont: plotFont,
         thickness: 10,
       },
@@ -37,11 +37,11 @@ export function WaterfallChart({ data, height = 320 }: WaterfallChartProps) {
     showlegend: false,
     xaxis: {
       ...baseLayout.xaxis,
-      title: { text: "Frequency (Hz)", font: plotFont },
+      title: { text: "Frequency (Hz)", font: labelFont },
     },
     yaxis: {
       ...baseLayout.yaxis,
-      title: { text: "Time (s)", font: plotFont },
+      title: { text: "Time (s)", font: labelFont },
       autorange: "reversed",
     },
     margin: { ...baseLayout.margin, r: 56 },
@@ -51,7 +51,6 @@ export function WaterfallChart({ data, height = 320 }: WaterfallChartProps) {
     <ChartFrame
       title="Waterfall"
       subtitle={`${(data.times[data.times.length - 1] ?? 0).toFixed(1)}s observation window`}
-      badge="DEMO DATA"
     >
       <PlotlyChart data={traces} layout={layout} config={baseConfig} height={height} />
     </ChartFrame>

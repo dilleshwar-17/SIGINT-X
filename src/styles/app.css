@@ -4,12 +4,16 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --color-bg: #0a0c10;
-  --color-surface: #11151c;
-  --color-panel: #151a23;
-  --color-panel-hover: #1a202b;
-  --color-border: #232936;
-  --color-border-light: #2c3442;
+  --color-bg: #070910;
+  --color-surface: #0b0e15;
+  --color-panel: #121722;
+  --color-panel-hover: #1a202d;
+  --color-border: #1f2634;
+  --color-border-light: #2b3444;
+
+  --color-elev-1: #0e121b;
+  --color-elev-2: #141924;
+  --color-elev-3: #1b2130;
 
   --color-cyan-accent: #22d3ee;
   --color-cyan-dim: #0891b2;
@@ -20,15 +24,88 @@
   --color-warn: #fbbf24;
   --color-err: #f87171;
   --color-info: #60a5fa;
+  --color-magenta: #e879f9;
 
-  --color-text-primary: #e5e9f0;
-  --color-text-secondary: #9aa3b2;
-  --color-text-muted: #6b7481;
+  --color-text-primary: #e8edf6;
+  --color-text-secondary: #9aa6ba;
+  --color-text-muted: #7e8a9e;
+
+  --radius-panel: 0.875rem;
+
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.4s ease-out infinite;
+  --animate-drift: drift 22s ease-in-out infinite alternate;
+  --animate-blink: blink 1.6s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -180% 0;
+  }
+  100% {
+    background-position: 180% 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0.7;
+  }
+  70% {
+    box-shadow: 0 0 0 6px currentColor;
+    opacity: 0;
+  }
+  100% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, -3%, 0) scale(1.08);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2c3442 #0a0c10;
+  scrollbar-color: #2b3444 #070910;
 }
 
 html,
@@ -43,30 +120,340 @@ body {
   color: var(--color-text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background-color: rgba(34, 211, 238, 0.25);
+  background-color: rgba(34, 211, 238, 0.28);
+  color: #ffffff;
 }
 
-/* Scrollbar styling for webkit browsers */
+/* ── Scrollbars ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2c3442;
-  border-radius: 4px;
+  background: linear-gradient(180deg, #2f3a4d, #222b39);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a4150;
+  background: linear-gradient(180deg, #3d4a61, #2b3547);
+  background-clip: padding-box;
 }
 
-/* Utility: subtle focus ring (accessibility) */
+/* ── Atmospheric background ──────────────────────────────── */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background-color: var(--color-bg);
+}
+
+.atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(38rem 38rem at 12% 0%, rgba(34, 211, 238, 0.14), transparent 62%),
+    radial-gradient(34rem 34rem at 88% 8%, rgba(167, 139, 250, 0.13), transparent 60%),
+    radial-gradient(46rem 46rem at 50% 110%, rgba(8, 145, 178, 0.11), transparent 65%);
+  animation: var(--animate-drift);
+}
+
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 25%, #000 35%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 25%, #000 35%, transparent 78%);
+}
+
+/* ── Glass panel surface ───────────────────────────────────── */
+.panel-surface {
+  position: relative;
+  border-radius: var(--radius-panel);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.008) 100%),
+    rgba(14, 18, 27, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.11);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.045),
+    0 18px 40px -26px rgba(0, 0, 0, 0.95);
+}
+
+.panel-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(160deg, rgba(34, 211, 238, 0.22), transparent 42%);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.panel-surface-hover {
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.panel-surface-hover:hover {
+  border-color: rgba(34, 211, 238, 0.28);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 26px 50px -28px rgba(0, 0, 0, 1),
+    0 0 0 1px rgba(34, 211, 238, 0.06);
+}
+
+/* ── Accent helpers ────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(120deg, #e8edf6 8%, #7fe9f7 52%, #a78bfa 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-cyan {
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.28), 0 8px 26px -12px rgba(34, 211, 238, 0.55);
+}
+
+.icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.shimmer {
+  background-image: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.06) 0%,
+    rgba(148, 163, 184, 0.16) 45%,
+    rgba(148, 163, 184, 0.06) 90%
+  );
+  background-size: 220% 100%;
+  animation: var(--animate-shimmer);
+}
+
+.hairline-t {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(148, 163, 184, 0.22) 22%,
+    rgba(34, 211, 238, 0.32) 50%,
+    rgba(148, 163, 184, 0.22) 78%,
+    transparent
+  );
+}
+
+/* ── Entrance motion ───────────────────────────────────────── */
+.animate-fade-up {
+  animation: var(--animate-fade-up);
+}
+
+.stagger-1 { animation-delay: 0.04s; }
+.stagger-2 { animation-delay: 0.09s; }
+.stagger-3 { animation-delay: 0.14s; }
+.stagger-4 { animation-delay: 0.19s; }
+.stagger-5 { animation-delay: 0.24s; }
+.stagger-6 { animation-delay: 0.29s; }
+
+/* ── Focus + a11y ──────────────────────────────────────────── */
 .focus-ring {
-  @apply outline-none focus-visible:ring-2 focus-visible:ring-cyan-accent/60 focus-visible:ring-offset-1 focus-visible:ring-offset-bg;
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.75);
+  outline-offset: 2px;
+}
+
+/* Plotly ships ~18px modebar buttons; give them a real pointer target. */
+.plot-container,
+.plot-container .main-svg {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+}
+.plot-container .modebar {
+  padding-top: 2px;
+}
+.plot-container .modebar-btn {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 6px !important;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  transition: background-color 0.15s ease;
+}
+.plot-container .modebar-btn:hover {
+  background-color: rgba(34, 211, 238, 0.1);
+}
+.plot-container .modebar-group {
+  background: transparent !important;
+}
+.plot-container .modebar-group:not(:last-child)::after {
+  display: none !important;
+}
+/* Keep chart typography locked to the UI sans even where Plotly defaults leak. */
+.plot-container .gtitle,
+.plot-container .legend text,
+.plot-container .annotation-text {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .atmosphere::before {
+    animation: none;
+  }
+}
+
+/* ── Print / PDF export ─────────────────────────────────────────
+   Overriding the design tokens flips the entire UI to a light
+   palette in print media, so the exported report is ink-efficient
+   and legible on paper without component-level special-casing. */
+@page {
+  size: A4 portrait;
+  margin: 14mm 12mm 16mm;
+}
+
+@media print {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-panel: #ffffff;
+    --color-panel-hover: #f4f6fa;
+    --color-border: #d3d9e3;
+    --color-border-light: #b9c2d0;
+
+    --color-elev-1: #f7f9fc;
+    --color-elev-2: #eef1f6;
+    --color-elev-3: #e6ebf2;
+
+    --color-cyan-accent: #0e7490;
+    --color-cyan-dim: #0b5f75;
+    --color-violet-accent: #6d28d9;
+    --color-violet-dim: #5b21b6;
+
+    --color-ok: #047857;
+    --color-warn: #a16207;
+    --color-err: #b91c1c;
+    --color-info: #1d4ed8;
+    --color-magenta: #a21caf;
+
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #334155;
+    --color-text-muted: #55637a;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Drop every piece of app chrome. */
+  .app-chrome,
+  .no-print,
+  .atmosphere {
+    display: none !important;
+  }
+
+  /* Collapse the app shell down to a plain document flow.
+     `:not(.atmosphere)` is required: the background layer also sits at
+     #root > div > div, so a bare `div` selector here outranks (and would
+     undo) the `display: none !important` set above. */
+  #root,
+  #root > div,
+  #root > div > div:not(.atmosphere),
+  main {
+    display: block !important;
+    height: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .panel-surface {
+    background: #fff !important;
+    border: 1px solid #d3d9e3 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .panel-surface::before {
+    display: none !important;
+  }
+
+  /* Gradient display text cannot be relied on in print; flatten it. */
+  .text-gradient {
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
+    color: #0f172a !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  li,
+  tr,
+  .report-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
 }

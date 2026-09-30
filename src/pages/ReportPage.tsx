@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FileText, FileJson, Copy, Check, Lock } from "lucide-react";
+import { FileText, FileJson, Copy, Check, FileDown } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -20,7 +20,7 @@ export function ReportPage() {
   const { id } = useParams<{ id: string }>();
   const [report, setReport] = useState<AnalysisReport | null>(null);
   const [copied, setCopied] = useState(false);
-  const [pdfNote, setPdfNote] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -46,6 +46,27 @@ export function ReportPage() {
     URL.revokeObjectURL(url);
   };
 
+  /**
+   * Renders the report through the browser's own print pipeline, which offers
+   * "Save as PDF". Text stays vector and selectable, unlike a canvas snapshot.
+   */
+  const exportPdf = () => {
+    if (!report || exporting) return;
+    setExporting(true);
+
+    const previousTitle = document.title;
+    const slug = report.reportId.replace(/[^\w.-]+/g, "_");
+    document.title = `${slug}`;
+
+    // Let the state update (and the spinner paint) land before the modal
+    // print dialog blocks the main thread.
+    window.setTimeout(() => {
+      window.print();
+      document.title = previousTitle;
+      setExporting(false);
+    }, 120);
+  };
+
   const copySummary = async () => {
     if (!report) return;
     try {
@@ -58,20 +79,22 @@ export function ReportPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="max-w-5xl space-y-6">
       <PageHeader
+        eyebrow="Deliverable"
         title="Analysis Report"
         subtitle="Explainable summary of the autonomous analysis."
         actions={
           <>
             <Button
-              variant="secondary"
+              variant="primary"
               size="sm"
-              title="Export PDF is not yet implemented"
-              onClick={() => setPdfNote(true)}
-              aria-disabled="true"
+              onClick={exportPdf}
+              disabled={!report || exporting}
+              title="Open the print dialog and choose 'Save as PDF'"
             >
-              <Lock className="h-3.5 w-3.5" aria-hidden="true" /> Export PDF
+              <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
+              {exporting ? "Preparing…" : "Export PDF"}
             </Button>
             <Button variant="secondary" size="sm" onClick={exportJson} disabled={!report}>
               <FileJson className="h-3.5 w-3.5" aria-hidden="true" /> Export JSON
@@ -87,13 +110,12 @@ export function ReportPage() {
           </>
         }
       />
-      {pdfNote && (
-        <div
-          role="status"
-          className="-mt-3 rounded-md border border-warn/40 bg-warn/10 px-3 py-2 text-xs text-warn"
-        >
-          PDF export is not implemented yet. Use Export JSON or Copy Summary instead.
-        </div>
+
+      {report && (
+        <p role="status" className="print-only mb-4 border-b border-border pb-3 text-[11px] text-text-muted">
+          <span className="font-semibold text-text-primary">{report.reportId}</span> ·{" "}
+          {report.analysisId} · generated {new Date(report.generatedAt).toLocaleString()} · SIGINT-X
+        </p>
       )}
 
       {report ? (

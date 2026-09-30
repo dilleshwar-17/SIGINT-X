@@ -461,7 +461,7 @@ export const mockModels: ModelInfo[] = [
 export const apiStatus: ApiStatus = {
   reachable: false,
   backendVersion: "unavailable",
-  modelVersion: "v0.3.1 (mock)",
+  modelVersion: "v0.3.1",
 };
 
 const latency = (ms?: number) =>

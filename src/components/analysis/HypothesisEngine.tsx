@@ -22,7 +22,10 @@ export function HypothesisEngine({ hypotheses }: HypothesisEngineProps) {
               ) : running ? (
                 <CircleDashed className="h-3.5 w-3.5 shrink-0 animate-spin text-cyan-accent" aria-hidden="true" />
               ) : (
-                <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-border-light" aria-hidden="true" />
+                <span
+                  className="h-3.5 w-3.5 shrink-0 rounded-full border border-border-light/80"
+                  aria-hidden="true"
+                />
               )}
               <span className={done ? "text-text-secondary" : "text-text-primary"}>{h.description}</span>
               {h.candidates > 0 && done && (
@@ -32,7 +35,7 @@ export function HypothesisEngine({ hypotheses }: HypothesisEngineProps) {
           );
         })}
       </ul>
-      <div className="mt-3 border-t border-border pt-3">
+      <div className="mt-3 border-t border-border/70 pt-3">
         {complete ? (
           <span className="font-mono text-xs font-semibold text-cyan-accent">
             {totalCandidates} CANDIDATE PIPELINES GENERATED

@@ -29,11 +29,11 @@ const stageIcon: Record<PipelineStage["type"], typeof Binary> = {
 };
 
 const statusClasses: Record<PipelineStage["status"], { box: string; icon: string }> = {
-  success: { box: "border-ok/35 bg-ok/5", icon: "text-ok" },
-  partial: { box: "border-warn/40 bg-warn/5", icon: "text-warn" },
-  failed: { box: "border-err/40 bg-err/5", icon: "text-err" },
-  running: { box: "border-cyan-accent/60 bg-cyan-accent/10", icon: "text-cyan-accent" },
-  pending: { box: "border-border bg-panel", icon: "text-text-muted" },
+  success: { box: "border-ok/30 bg-ok/[0.06]", icon: "text-ok" },
+  partial: { box: "border-warn/35 bg-warn/[0.06]", icon: "text-warn" },
+  failed: { box: "border-err/35 bg-err/[0.06]", icon: "text-err" },
+  running: { box: "border-cyan-accent/50 bg-cyan-accent/[0.08]", icon: "text-cyan-accent" },
+  pending: { box: "border-border-light/70 bg-white/[0.02]", icon: "text-text-muted" },
 };
 
 function Connector({ failed }: { failed: boolean }) {
@@ -44,7 +44,12 @@ function Connector({ failed }: { failed: boolean }) {
       aria-hidden="true"
     >
       <div className={`h-1.5 w-px ${failed ? "bg-err/50" : "bg-border-light"}`} />
-      <svg width="14" height="10" viewBox="0 0 14 10" className={failed ? "text-err/60" : "text-text-muted"}>
+      <svg
+        width="14"
+        height="10"
+        viewBox="0 0 14 10"
+        className={failed ? "text-err/60" : "text-text-muted"}
+      >
         <path d="M7 0v6M2 3l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.4" />
       </svg>
     </div>
@@ -72,26 +77,39 @@ export function PipelineGraph({ pipeline }: PipelineGraphProps) {
         const failed = stage.status === "failed" || stage.status === "partial";
         return (
           <div key={stage.id} className="w-full max-w-[280px]">
-            <div
-              className={`flex items-center gap-3 rounded-md border px-3.5 py-2.5 ${st.box}`}
+<div
+              className={`flex items-center gap-3 rounded-lg border px-3.5 py-2.5 transition-all duration-200 ${st.box}`}
               title={`${stage.name} — ${stage.status}`}
             >
-              <Icon className={`h-4 w-4 shrink-0 ${st.icon}`} aria-hidden="true" />
+              <span
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-current/20 ${st.icon}`}
+                aria-hidden="true"
+              >
+                <Icon className="h-3.5 w-3.5" />
+              </span>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xs font-medium text-text-primary">{stage.name}</div>
                 <div className="font-mono text-[9px] uppercase tracking-wider text-text-muted">
                   {stage.type}
                 </div>
               </div>
-              {stage.status === "running" && <Loader className="h-3 w-3 animate-spin text-cyan-accent" aria-hidden="true" />}
-            </div>
+              {stage.status === "running" && (
+                <Loader className="h-3.5 w-3.5 animate-spin text-cyan-accent" aria-hidden="true" />
+              )}
+              {stage.status === "success" && (
+                <span
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-ok shadow-[0_0_8px_rgba(52,211,153,0.9)]"
+                  aria-hidden="true"
+                />
+              )}
+</div>
             {i < effectiveStages.length - 1 && <Connector failed={failed} />}
           </div>
         );
       })}
       {terminalFailed && (
         <div className="mt-2 w-full max-w-[280px]">
-          <div className="flex items-start gap-2 rounded-md border border-err/40 bg-err/10 px-3 py-2">
+          <div className="mt-2 flex w-full max-w-[280px] items-start gap-2 rounded-lg border border-err/35 bg-err/[0.07] px-3 py-2">
             <X className="mt-0.5 h-3.5 w-3.5 shrink-0 text-err" aria-hidden="true" />
             <div className="text-[11px] leading-snug text-text-secondary">
               {effectiveStages.find((s) => s.status === "failed")?.reason ?? (

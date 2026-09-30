@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Brain, GitBranch } from "lucide-react";
+import { Brain, Binary, ChevronRight, FileText, GitBranch } from "lucide-react";
 import { Panel } from "@/components/ui/Panel";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ParameterCard } from "@/components/analysis/ParameterCard";
@@ -79,36 +79,43 @@ export function AnalysisWorkspacePage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">
-            Signal:{" "}
+      <div className="animate-fade-up flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="mb-1.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-accent/80">
+            <span className="h-px w-6 bg-gradient-to-r from-cyan-accent to-transparent" aria-hidden="true" />
+            Analysis Workspace
+          </div>
+          <h1 className="flex flex-wrap items-baseline gap-2 text-gradient text-2xl font-semibold tracking-tight sm:text-[28px]">
+            <span className="text-text-primary">Signal</span>
             <span className="font-mono text-cyan-accent">
               {analysis?.signalFilename ?? "unknown_001.iq"}
             </span>
           </h1>
-          <div className="mt-1 flex items-center gap-3 text-sm text-text-secondary">
-            <span className="font-mono">{analysis?.id ?? id}</span>
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-text-secondary">
+            <span className="font-mono text-xs text-text-muted">{analysis?.id ?? id}</span>
             <StatusBadge status="COMPLETED" />
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm">
-            <Link to={`/analyze/${id}/bits`} className="flex items-center gap-1.5">
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Link to={`/analyze/${id}/bits`}>
+            <Button variant="secondary" size="sm">
+              <Binary className="h-3.5 w-3.5" aria-hidden="true" />
               Bits &amp; Frame
-            </Link>
-          </Button>
-          <Button variant="secondary" size="sm">
-            <Link to={`/analyze/${id}/pipelines`} className="flex items-center gap-1.5">
+            </Button>
+          </Link>
+          <Link to={`/analyze/${id}/pipelines`}>
+            <Button variant="secondary" size="sm">
               <GitBranch className="h-3.5 w-3.5" aria-hidden="true" />
               Pipelines
-            </Link>
-          </Button>
-          <Button variant="secondary" size="sm">
-            <Link to={`/analyze/${id}/report`} className="flex items-center gap-1.5">
+            </Button>
+          </Link>
+          <Link to={`/analyze/${id}/report`}>
+            <Button variant="primary" size="sm">
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" />
               Report
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -180,34 +187,58 @@ export function AnalysisWorkspacePage() {
         title="Autonomous Pipeline Discovery"
         icon={<GitBranch className="h-3.5 w-3.5" aria-hidden="true" />}
         actions={
-          <Button variant="ghost" size="sm">
-            <Link to={`/analyze/${id}/pipelines`}>Explore all</Link>
-          </Button>
+          <Link to={`/analyze/${id}/pipelines`}>
+            <Button variant="ghost" size="sm">
+              Explore all
+              <ChevronRight className="h-3 w-3" aria-hidden="true" />
+            </Button>
+          </Link>
         }
       >
         {pipelines ? (
-          <ul className="divide-y divide-border">
+          <ul className="divide-y divide-border/60">
             {pipelines.map((p) => (
-              <li key={p.id} className="flex items-center justify-between gap-3 py-2.5">
-                <div className="flex items-center gap-2">
+              <li
+                key={p.id}
+                className="flex items-center justify-between gap-3 py-3 transition-colors hover:bg-white/[0.02]"
+              >
+                <div className="flex min-w-0 items-center gap-3">
                   <span
-                    className={`font-mono text-sm ${
+                    className={`font-mono text-sm font-semibold ${
                       p.status === "BEST" ? "text-cyan-accent" : "text-text-primary"
                     }`}
                   >
                     #{p.rank}
                   </span>
-                  <span className="font-mono text-xs text-text-secondary">
+                  <span className="truncate font-mono text-xs text-text-secondary">
                     {p.stageNames.join(" → ")}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex shrink-0 items-center gap-3">
+                  <div className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-white/[0.07] sm:block">
+                    <div
+                      className="h-full rounded-full transition-[width] duration-700 ease-out"
+                      style={{
+                        width: `${Math.round(p.score * 100)}%`,
+                        background:
+                          p.status === "BEST"
+                            ? "linear-gradient(90deg, #34d399, #22d3ee)"
+                            : p.status === "FAILED"
+                              ? "linear-gradient(90deg, #f87171, #ef4444)"
+                              : "linear-gradient(90deg, #fbbf24, #fb923c)",
+                      }}
+                    />
+                  </div>
                   <span
-                    className={`font-mono text-sm ${
-                      p.status === "BEST" ? "text-ok" : p.status === "FAILED" ? "text-err" : "text-text-secondary"
+                    className={`font-mono text-sm tabular-nums ${
+                      p.status === "BEST"
+                        ? "text-ok"
+                        : p.status === "FAILED"
+                          ? "text-err"
+                          : "text-text-secondary"
                     }`}
                   >
-                    {p.status === "BEST" ? "★" : ""} {Math.round(p.score * 100)}%
+                    {Math.round(p.score * 100)}%
                   </span>
                   <StatusBadge status={p.status} />
                 </div>

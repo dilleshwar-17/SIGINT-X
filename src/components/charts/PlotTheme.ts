@@ -1,10 +1,10 @@
 export const plotColors = {
-  background: "#151a23",
+  background: "rgba(0,0,0,0)",
   paper: "rgba(0,0,0,0)",
-  grid: "#232936",
-  gridZero: "#2c3442",
-  text: "#9aa3b2",
-  textStrong: "#e5e9f0",
+  grid: "rgba(148,163,184,0.10)",
+  gridZero: "rgba(148,163,184,0.22)",
+  text: "#9aa6ba",
+  textStrong: "#e8edf6",
   cyan: "#22d3ee",
   violet: "#a78bfa",
   ok: "#34d399",
@@ -14,39 +14,72 @@ export const plotColors = {
   yellow: "#facc15",
 } as const;
 
+export const sansStack =
+  "'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif";
+export const monoStack = "'JetBrains Mono', ui-monospace, monospace";
+
+/** Prose, titles, legends and annotations read better in the UI sans. */
+export const labelFont = {
+  family: sansStack,
+  size: 11,
+  color: plotColors.text,
+};
+
+/** Numeric ticks stay monospaced so digits align down the axis. */
 export const plotFont = {
-  family: "'JetBrains Mono', ui-monospace, monospace",
+  family: monoStack,
   size: 10,
   color: plotColors.text,
 };
 
+export const axisBase = {
+  gridcolor: plotColors.grid,
+  zerolinecolor: plotColors.gridZero,
+  linecolor: "rgba(148,163,184,0.16)",
+  linewidth: 1,
+  tickfont: plotFont,
+  title: { font: { family: sansStack, size: 11, color: plotColors.text } },
+  ticks: "outside" as const,
+  ticklen: 3,
+  tickcolor: "rgba(148,163,184,0.24)",
+  automargin: true,
+  showspikes: false,
+};
+
 export const baseLayout = {
-  font: plotFont,
+  font: labelFont,
   paper_bgcolor: plotColors.paper,
   plot_bgcolor: plotColors.background,
-  margin: { l: 56, r: 24, t: 24, b: 44 },
+  margin: { l: 58, r: 20, t: 18, b: 44 },
+  hovermode: "closest" as const,
+  hoverdistance: 40,
+  spikedistance: -1,
+  dragmode: "zoom" as const,
   hoverlabel: {
-    bgcolor: "#1a202b",
-    bordercolor: "#2c3442",
-    font: { family: plotFont.family, size: 10, color: plotColors.textStrong },
+    bgcolor: "rgba(14,18,27,0.95)",
+    bordercolor: "rgba(34,211,238,0.35)",
+    font: { family: monoStack, size: 10, color: plotColors.textStrong },
+    align: "left" as const,
+    namelength: -1,
+  },
+  legend: {
+    bgcolor: "rgba(0,0,0,0)",
+    bordercolor: "rgba(148,163,184,0.14)",
+    borderwidth: 1,
+    font: labelFont,
+    orientation: "h" as const,
+    x: 0,
+    y: 1.14,
   },
   modebar: {
-    color: plotColors.text,
+    color: "rgba(154,166,186,0.65)",
     activecolor: plotColors.cyan,
     bgcolor: "rgba(0,0,0,0)",
   },
-  xaxis: {
-    gridcolor: plotColors.grid,
-    zerolinecolor: plotColors.gridZero,
-    linecolor: plotColors.grid,
-    tickfont: plotFont,
-  },
-  yaxis: {
-    gridcolor: plotColors.grid,
-    zerolinecolor: plotColors.gridZero,
-    linecolor: plotColors.grid,
-    tickfont: plotFont,
-  },
+  xaxis: axisBase,
+  yaxis: axisBase,
+  colorway: [plotColors.cyan, plotColors.violet, plotColors.ok, plotColors.warn, plotColors.magenta],
+  transitions: { duration: 260, easing: "cubic-in-out" as const },
 };
 
 export const baseConfig = {
@@ -62,5 +95,14 @@ export const baseConfig = {
     "toggleSpikelines",
     "hoverClosestCartesian",
     "hoverCompareCartesian",
+    "hoverClosestGl2d",
+    "hoverCompareGl2d",
+    "toggleHover",
+    "sendDataToCloud",
   ],
+  toImageButtonOptions: {
+    format: "png" as const,
+    scale: 2,
+    bgcolor: "#0b0e15",
+  },
 } as const;

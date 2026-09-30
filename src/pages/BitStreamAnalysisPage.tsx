@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Binary, LayoutGrid } from "lucide-react";
+import { Binary, LayoutGrid, FileText } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
+import { Button } from "@/components/ui/Button";
 import { BitStreamViewer } from "@/components/bits/BitStreamViewer";
 import { FrameStructure } from "@/components/bits/FrameStructure";
 import { getBitStream, getFrame } from "@/services/api";
@@ -15,38 +16,40 @@ export function BitStreamAnalysisPage() {
   const [frame, setFrame] = useState<Frame | null>(null);
 
   useEffect(() => {
-    getBitStream().then(setStream);
-    getFrame().then(setFrame);
+    getBitStream().then(setStream).catch(() => setStream(null));
+    getFrame().then(setFrame).catch(() => setFrame(null));
   }, []);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="max-w-5xl space-y-6">
       <PageHeader
+        eyebrow="Decoded Output"
         title="Bit Stream & Frame Analysis"
-        subtitle={`Decoded bit stream and inferred framing structure for ANL-${id ?? ""}`}
+        subtitle={`Decoded bit stream and inferred framing structure for ${id ?? "analysis"}`}
         actions={
-          <Link
-            to={`/analyze/${id}/report`}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border-light bg-panel px-3.5 py-1.5 text-sm text-text-primary transition-colors hover:border-cyan-dim/50 hover:bg-panel-hover"
-          >
-            View Report
+          <Link to={`/analyze/${id}/report`}>
+            <Button variant="secondary" size="md">
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+              View Report
+            </Button>
           </Link>
         }
       />
 
-      <Panel title="Bit Stream" icon={<Binary className="h-3.5 w-3.5" aria-hidden="true" />}>
-        {stream ? (
-          <BitStreamViewer stream={stream} />
-        ) : (
-          <PanelSkeleton rows={6} />
-        )}
-        <p className="mt-3 text-[10px] leading-relaxed text-text-muted">
-          Undecoded raw bits carry no semantic meaning; interpretation is only shown where the
-          pipeline has established it.
-        </p>
+      <Panel
+        title="Bit Stream"
+        subtitle={stream ? `${stream.length} bits decoded` : undefined}
+        icon={<Binary className="h-3.5 w-3.5" aria-hidden="true" />}
+        footer="Undecoded raw bits carry no semantic meaning; interpretation is shown only where the pipeline has established it."
+      >
+        {stream ? <BitStreamViewer stream={stream} /> : <PanelSkeleton rows={6} />}
       </Panel>
 
-      <Panel title="Frame Structure" icon={<LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />}>
+      <Panel
+        title="Frame Structure"
+        subtitle={frame ? `${frame.regions.length} regions inferred` : undefined}
+        icon={<LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />}
+      >
         {frame ? <FrameStructure frame={frame} /> : <PanelSkeleton rows={4} />}
       </Panel>
     </div>

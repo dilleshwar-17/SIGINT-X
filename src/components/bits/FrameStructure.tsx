@@ -33,7 +33,7 @@ export function FrameStructure({ frame }: FrameStructureProps) {
       </div>
 
       <div
-        className="flex h-14 w-full overflow-hidden rounded-md border border-border"
+        className="flex h-14 w-full overflow-hidden rounded-lg border border-border/70"
         role="img"
         aria-label={`Frame layout: ${frame.regions.map((r) => `${r.name} ${r.bitLength} bits`).join(", ")}`}
       >
@@ -66,7 +66,10 @@ export function FrameStructure({ frame }: FrameStructureProps) {
       </div>
 
       {selected && (
-        <dl className="mt-3 grid grid-cols-2 gap-2 rounded-md border border-border bg-surface p-3 sm:grid-cols-4" aria-live="polite">
+        <dl
+          className="panel-surface animate-fade-in mt-3 grid grid-cols-2 gap-3 p-3.5 sm:grid-cols-4"
+          aria-live="polite"
+        >
           <div>
             <dt className="text-[9px] uppercase tracking-widest text-text-muted">Region</dt>
             <dd className="mt-0.5 text-xs font-medium text-text-primary">{selected.name}</dd>

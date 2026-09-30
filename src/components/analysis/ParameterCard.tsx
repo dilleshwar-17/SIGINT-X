@@ -20,9 +20,9 @@ export function ParameterCard({ label, value, unit, confidence, method }: Parame
   const [showMethod, setShowMethod] = useState(false);
 
   return (
-    <div className="flex flex-col justify-between gap-2 rounded-md border border-border bg-panel p-3">
+    <div className="panel-surface panel-surface-hover flex flex-col justify-between gap-2 p-3.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
           {label}
         </span>
         {method && (
@@ -31,25 +31,26 @@ export function ParameterCard({ label, value, unit, confidence, method }: Parame
             onClick={() => setShowMethod((v) => !v)}
             aria-label={`Method for ${label}`}
             aria-expanded={showMethod}
-            className="text-text-muted transition-colors hover:text-cyan-accent focus-ring"
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-cyan-accent/10 hover:text-cyan-accent focus-ring"
           >
             <Info className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         )}
       </div>
-      <div className="font-mono text-lg font-semibold text-text-primary">
+
+      <div className="font-mono text-xl font-semibold leading-none tracking-tight text-text-primary">
         {value}
-        {unit && <span className="ml-1 text-xs font-normal text-text-muted">{unit}</span>}
+        {unit && <span className="ml-1 text-[11px] font-normal text-text-muted">{unit}</span>}
       </div>
-      <div className="flex items-center gap-2">
-        <span
-          className={`rounded-full border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide ${confTone[confidence]}`}
-        >
-          {confidence}
-        </span>
-      </div>
+
+      <span
+        className={`self-start rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide ${confTone[confidence]}`}
+      >
+        {confidence}
+      </span>
+
       {showMethod && method && (
-        <p className="mt-1 border-t border-border-light pt-2 text-[11px] leading-snug text-text-secondary">
+        <p className="animate-fade-in mt-1 border-t border-border/70 pt-2 text-[11px] leading-snug text-text-secondary">
           {method}
         </p>
       )}
